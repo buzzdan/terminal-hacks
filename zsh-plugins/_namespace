@@ -1,0 +1,7 @@
+_namespace() {
+    local namespaces
+    namespaces="$(curl -s http://nsapi.eu1.appsflyer.com/info/list-namespaces | jq -r '. | join(" ")')"
+    _arguments "1: :($namespaces)"
+}
+
+_namespace "$@"

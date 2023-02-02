@@ -1,0 +1,40 @@
+#compdef domain-cli
+
+function _domain-cli() {
+    local line
+    
+    function _get_ns() {
+        local namespaces
+        namespaces="$(curl -s http://nsapi.eu1.appsflyer.com/info/list-namespaces | jq -r '. | join(" ")')"
+        _arguments "1: :($namespaces)"
+    }
+
+    function _commands() {
+        local commands
+        # namespaces="$(curl -s http://nsapi.eu1.appsflyer.com/info/list-namespaces | jq -r '. | join(" ")')"
+        commands=(
+            'status:status'
+            'config:config'
+            'refresh:refresh'
+            'lock:lock'
+            'unlock:unlock'
+            'delete:delete'
+            'replicate:replicate'
+        )
+        _describe 'command' "($commands)"
+        #  _arguments "1: :$commands"
+    }
+    _arguments "1: :_commands" "*::arg:->args"
+
+    case $line[1] in
+        # call completion functions for each nested subcommand here
+        status|config|refresh|lock|unlock|delete)
+            _get_ns
+            ;;
+        replicate)
+            _arguments '1: :->_get_ns' "*::arg:->args"
+            ;;
+    esac
+}
+
+_domain-cli "$@"
